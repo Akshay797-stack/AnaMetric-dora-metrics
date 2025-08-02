@@ -39,15 +39,4 @@ See full architecture: [`docs/architecture.md`](docs/architecture.md)
 ## 📁 Project Structure
 
 
-📁 MetricSync/
-├── collector/         # Tool-specific collectors (GitHub, Jenkins, Prometheus)
-├── processor/         # DORA metric calculation & normalization logic
-├── api/               # REST API for metric access
-├── database/          # MongoDB schema or seed data (if needed)
-├── config/            # Configurations (e.g., API keys, intervals)
-├── docs/              # Architecture, design decisions, visuals
-├── tests/             # Unit/integration tests
-├── requirements.txt   # Python dependencies
-└── README.md          # This file
-
-
+<pre> <code> 📁 MetricSync/ │ ├── collector/ → Tool-specific collectors (GitHub, Jenkins, Prometheus) ├── processor/ → DORA metric calculation & normalization logic ├── api/ → REST API for metric access ├── database/ → MongoDB schema or seed data (if needed) ├── config/ → Configurations (e.g., API keys, intervals) ├── docs/ → Architecture, design decisions, visuals ├── tests/ → Unit/integration tests ├── requirements.txt → Python dependencies └── README.md → This file </code> </pre>
