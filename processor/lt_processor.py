@@ -56,8 +56,8 @@ def calculate_lead_time(github_path: str, jenkins_path: str) -> List[Dict]:
     return lead_times
 
 if __name__ == "__main__":
-    github_path = "tests/sample_raw_data/github_events.json"
-    jenkins_path = "tests/sample_raw_data/jenkins_deployments.json"
+    github_path = "../tests/sample_raw_data/github_events.json"
+    jenkins_path = "../tests/sample_raw_data/jenkins_deployments.json"
 
     lt_data = calculate_lead_time(github_path, jenkins_path)
 
