@@ -1,14 +1,14 @@
-# 📊 MetricSync – DORA Metrics Analytics Engine
+# 📊 AnaMetric – DORA Metrics Analytics Engine
 
-**MetricSync** is a powerful and extensible DevOps analytics tool designed to automatically collect, process, and visualize the **four key DORA metrics**. It enables engineering teams to measure and improve software delivery performance using data from CI/CD tools and production monitoring systems.
+**AnaMetric** is a powerful and extensible DevOps analytics tool designed to automatically collect, process, and visualize the **four key DORA metrics**. It enables engineering teams to measure and improve software delivery performance using data from CI/CD tools and production monitoring systems.
 
 > 🚀 Built for modern DevOps culture • Backed by real-time metrics • Powered by MongoDB Time-Series
 
 ---
 
-## 📌 Why MetricSync?
+## 📌 Why AnaMetric?
 
-Modern DevOps teams need visibility into delivery performance. MetricSync brings clarity through:
+Modern DevOps teams need visibility into delivery performance. AnaMetric brings clarity through:
 
 - ✅ Automated data collection from GitHub, Jenkins, and Prometheus  
 - ✅ Unified event model across tool-specific JSONs  
@@ -39,4 +39,4 @@ See full architecture: [`docs/architecture.md`](docs/architecture.md)
 ## 📁 Project Structure
 
 
-<pre> <code> 📁 MetricSync/ │ ├── collector/ → Tool-specific collectors (GitHub, Jenkins, Prometheus) ├── processor/ → DORA metric calculation & normalization logic ├── api/ → REST API for metric access ├── database/ → MongoDB schema or seed data (if needed) ├── config/ → Configurations (e.g., API keys, intervals) ├── docs/ → Architecture, design decisions, visuals ├── tests/ → Unit/integration tests ├── requirements.txt → Python dependencies └── README.md → This file </code> </pre>
+<pre> <code> 📁 AnaMetric/ │ ├── collector/ → Tool-specific collectors (GitHub, Jenkins, Prometheus) ├── processor/ → DORA metric calculation & normalization logic ├── api/ → REST API for metric access ├── database/ → MongoDB schema or seed data (if needed) ├── config/ → Configurations (e.g., API keys, intervals) ├── docs/ → Architecture, design decisions, visuals ├── tests/ → Unit/integration tests ├── requirements.txt → Python dependencies └── README.md → This file </code> </pre>
