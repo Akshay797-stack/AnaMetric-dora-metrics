@@ -1,6 +1,4 @@
 
-# metrics/deployment_frequency.py
-
 from pymongo import MongoClient
 from datetime import datetime
 
@@ -10,7 +8,7 @@ def get_deployment_frequency(start_time: str, end_time: str):
         start_dt = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
         end_dt = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
     except ValueError:
-        return {"error": "❌ Invalid datetime format. Use 'YYYY-MM-DD HH:MM:SS'"}
+        return {"error": "Invalid datetime format. Use 'YYYY-MM-DD HH:MM:SS'"}
 
     # Connect to MongoDB
     client = MongoClient("mongodb://localhost:27017/")
