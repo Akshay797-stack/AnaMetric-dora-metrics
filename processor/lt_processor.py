@@ -1,65 +1,108 @@
 import json
+import os
+from collections import defaultdict
 from datetime import datetime
-from typing import List, Dict
 
+GITHUB_PATH = "../tests/sample_raw_data/github_events.json"
+JENKINS_PATH = "../tests/sample_raw_data/jenkins_deployments.json"
+OUTPUT_DIR = "outputs"
 
-def calculate_lead_time(github_path: str, jenkins_path: str) -> List[Dict]:
-    """
-    Calculate lead time for changes using GitHub PR commit timestamps and Jenkins deployment times.
+DAILY_FILE = os.path.join(OUTPUT_DIR, "lt_daily.json")
+WEEKLY_FILE = os.path.join(OUTPUT_DIR, "lt_weekly.json")
+MONTHLY_FILE = os.path.join(OUTPUT_DIR, "lt_monthly.json")
+INVALID_LOG = os.path.join(OUTPUT_DIR, "invalid_lt_log.txt")
 
-    Args:
-        github_path (str): Path to GitHub events JSON.
-        jenkins_path (str): Path to Jenkins deployment JSON.
+def parse_timestamp(ts):
+    try:
+        return datetime.strptime(ts, "%Y-%m-%dT%H:%M:%SZ")
+    except Exception:
+        return None
 
-    Returns:
-        List[Dict]: List of commits with lead time in minutes and timestamps.
-    """
+def get_period_key(date_obj, granularity):
+    if granularity == "daily":
+        return date_obj.strftime("%Y-%m-%d")
+    elif granularity == "weekly":
+        return date_obj.strftime("%Y-W%U")
+    elif granularity == "monthly":
+        return date_obj.strftime("%Y-%m")
 
-    # Step 1: Load GitHub PR data
-    with open(github_path, 'r') as f:
-        github_data = json.load(f)
+def calculate_lead_time(start, end):
+    return (end - start).total_seconds() / 3600  # in hours
 
-    # Step 2: Map each commit SHA to its earliest timestamp
-    commit_to_time = {}
+def log_invalid(reason, commit_sha):
+    with open(INVALID_LOG, "a") as f:
+        f.write(json.dumps({"reason": reason, "commit_sha": commit_sha}) + "\n")
+
+def write_output(data, path):
+    with open(path, "w") as f:
+        json.dump(data, f, indent=4)
+
+def process_lead_time():
+    # Load raw data (JSON Format)
+    with open(GITHUB_PATH) as gh_file:
+        github_data = json.load(gh_file)
+
+    with open(JENKINS_PATH) as jenkins_file:
+        jenkins_data = json.load(jenkins_file)
+
+    # Filter successful Jenkins builds only
+    valid_deployments = {
+        item["commit_sha"]: item
+        for item in jenkins_data
+        if item["status"] == "SUCCESS"
+    }
+
+    # Storage for lead times
+    daily_data = defaultdict(list)
+    weekly_data = defaultdict(list)
+    monthly_data = defaultdict(list)
+
     for pr in github_data:
-        if not pr.get("commits"):
-            continue
-        # Find the first commit (by timestamp) in the PR
-        first_commit = min(pr["commits"], key=lambda c: c["timestamp"])
-        sha = first_commit["sha"]
-        timestamp = first_commit["timestamp"].replace("Z", "")
-        commit_to_time[sha] = datetime.fromisoformat(timestamp)
+        for commit in pr.get("commits", []):
+            sha = commit.get("sha")
+            commit_time = parse_timestamp(commit.get("timestamp"))
 
-    # Step 3: Load Jenkins deployment data
-    with open(jenkins_path, 'r') as f:
-        jenkins_data = json.load(f)
+            if not sha or not commit_time:
+                log_invalid("Missing or invalid commit timestamp", sha or "UNKNOWN")
+                continue
 
-    # Step 4: Match commit to deployment and calculate lead time
-    lead_times = []
-    for deploy in jenkins_data:
-        if deploy.get("status") != "SUCCESS":
-            continue
+            deploy_info = valid_deployments.get(sha)
+            if not deploy_info:
+                log_invalid("No successful Jenkins build for this commit", sha)
+                continue
 
-        sha = deploy.get("commit_sha")
-        if sha in commit_to_time:
-            deploy_time = datetime.fromisoformat(deploy["timestamp"].replace("Z", ""))
-            commit_time = commit_to_time[sha]
-            lead_time = (deploy_time - commit_time).total_seconds() / 60
+            deploy_time = parse_timestamp(deploy_info["timestamp"])
+            if not deploy_time:
+                log_invalid("Invalid Jenkins timestamp", sha)
+                continue
 
-            lead_times.append({
-                "commit_sha": sha,
-                "lead_time_minutes": round(lead_time, 2),
-                "commit_time": commit_time.isoformat(),
-                "deploy_time": deploy_time.isoformat()
-            })
+            if deploy_time < commit_time:
+                log_invalid("Deployment before commit", sha)
+                continue
 
-    return lead_times
+            lt_hours = calculate_lead_time(commit_time, deploy_time)
+
+            # Group into all buckets
+            for granularity, target in zip(
+                ["daily", "weekly", "monthly"],
+                [daily_data, weekly_data, monthly_data]
+            ):
+                key = get_period_key(deploy_time, granularity)
+                target[key].append(lt_hours)
+
+    # Average the lead times
+    daily_avg = {k: round(sum(v)/len(v), 2) for k, v in daily_data.items()}
+    weekly_avg = {k: round(sum(v)/len(v), 2) for k, v in weekly_data.items()}
+    monthly_avg = {k: round(sum(v)/len(v), 2) for k, v in monthly_data.items()}
+
+    # Save outputs
+    write_output(daily_avg, DAILY_FILE)
+    write_output(weekly_avg, WEEKLY_FILE)
+    write_output(monthly_avg, MONTHLY_FILE)
+
+    print("Lead Time calculation completed...")
 
 if __name__ == "__main__":
-    github_path = "../tests/sample_raw_data/github_events.json"
-    jenkins_path = "../tests/sample_raw_data/jenkins_deployments.json"
-
-    lt_data = calculate_lead_time(github_path, jenkins_path)
-
-    for item in lt_data:
-        print(item)
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    open(INVALID_LOG, "w").close()  # Clear log
+    process_lead_time()
