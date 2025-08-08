@@ -1,21 +1,11 @@
-import json
-import os
+from pymongo import MongoClient
 from datetime import datetime
 from collections import defaultdict
-
-JENKINS_PATH = "../tests/sample_raw_data/jenkins_deployments.json"
-PROMETHEUS_PATH = "../tests/sample_raw_data/prometheus_alerts.json"
-OUTPUT_DIR = "outputs"
-
-DAILY_FILE = os.path.join(OUTPUT_DIR, "mttr_daily.json")
-WEEKLY_FILE = os.path.join(OUTPUT_DIR, "mttr_weekly.json")
-MONTHLY_FILE = os.path.join(OUTPUT_DIR, "mttr_monthly.json")
-INVALID_LOG = os.path.join(OUTPUT_DIR, "invalid_mttr_log.txt")
 
 def parse_time(ts):
     try:
         return datetime.strptime(ts, "%Y-%m-%dT%H:%M:%SZ")
-    except:
+    except Exception:
         return None
 
 def get_period_key(dt, granularity):
@@ -26,75 +16,67 @@ def get_period_key(dt, granularity):
     elif granularity == "monthly":
         return dt.strftime("%Y-%m")
 
-def log_invalid(reason, data):
-    with open(INVALID_LOG, "a") as f:
-        f.write(json.dumps({"reason": reason, "data": data}, default=str) + "\n")
+def calculate_mttr_from_db(start_time_str, end_time_str):
+    # Convert input strings to datetime
+    try:
+        start_time = datetime.strptime(start_time_str, "%Y-%m-%d %H:%M:%S")
+        end_time = datetime.strptime(end_time_str, "%Y-%m-%d %H:%M:%S")
+    except ValueError:
+        return {"error": "Invalid datetime format. Use YYYY-MM-DD HH:MM:SS"}
 
-def write_output(data, path):
-    with open(path, "w") as f:
-        json.dump(data, f, indent=4)
+    # Connect to MongoDB
+    client = MongoClient("mongodb://localhost:27017/")
+    db = client["metricsDB"]
+    deployments = db["jenkins_deployments"]
+    alerts = db["prometheus_alerts"]
 
-def process_mttr():
-    # Load files
-    with open(JENKINS_PATH) as f:
-        jenkins_data = json.load(f)
+    # Filter data in date range
+    failed_deploys = list(deployments.find({
+        "status": "FAILURE",
+        "timestamp": {
+            "$gte": start_time.isoformat() + "Z",
+            "$lte": end_time.isoformat() + "Z"
+        }
+    }))
 
-    with open(PROMETHEUS_PATH) as f:
-        alerts = json.load(f)
+    relevant_alerts = list(alerts.find({
+        "severity": {"$in": ["critical", "high"]},
+        "startsAt": {
+            "$gte": start_time.isoformat() + "Z",
+            "$lte": end_time.isoformat() + "Z"
+        }
+    }))
 
-    # Sort alerts by startsAt
-    sorted_alerts = sorted(
-        [a for a in alerts if a.get("severity", "").lower() in ["critical", "high"]],
-        key=lambda x: parse_time(x["startsAt"])
-    )
+    sorted_alerts = sorted(relevant_alerts, key=lambda x: parse_time(x["startsAt"]))
+    daily, weekly, monthly = defaultdict(list), defaultdict(list), defaultdict(list)
 
-    # Build time buckets
-    daily, weekly, monthly = defaultdict(list),defaultdict(list),defaultdict(list)
-
-    for deploy in jenkins_data:
-        if deploy.get("status") != "FAILURE":
-            continue
-
+    for deploy in failed_deploys:
         deploy_time = parse_time(deploy.get("timestamp"))
         if not deploy_time:
-            log_invalid("Invalid deploy timestamp", deploy)
             continue
 
-        # Find the first alert that starts AFTER this deployment
+        # Find alert that occurred after deployment
         matching_alert = next((
             a for a in sorted_alerts
             if parse_time(a["startsAt"]) and parse_time(a["startsAt"]) >= deploy_time
         ), None)
 
         if not matching_alert:
-            log_invalid("No alert found after failed deploy", deploy)
             continue
 
         recovery_time = parse_time(matching_alert.get("endsAt"))
         if not recovery_time or recovery_time < deploy_time:
-            log_invalid("Invalid recovery time", matching_alert)
             continue
 
         mttr_minutes = (recovery_time - deploy_time).total_seconds() / 60.0
 
-        # Store in time buckets
-        for gran, bucket in [("daily", daily), ("weekly", weekly), ("monthly", monthly)]:
-            key = get_period_key(deploy_time, gran)
+        for granularity, bucket in [("daily", daily), ("weekly", weekly), ("monthly", monthly)]:
+            key = get_period_key(deploy_time, granularity)
             bucket[key].append(mttr_minutes)
 
-    # Aggregate average MTTR
-    daily_avg = {k: round(sum(v)/len(v), 2) for k, v in daily.items()}
-    weekly_avg = {k: round(sum(v)/len(v), 2) for k, v in weekly.items()}
-    monthly_avg = {k: round(sum(v)/len(v), 2) for k, v in monthly.items()}
+    # Compute averages
+    result = {
+        "daily": {k: round(sum(v)/len(v), 2) for k, v in daily.items()},
+    }
 
-    # Save results
-    write_output(daily_avg, DAILY_FILE)
-    write_output(weekly_avg, WEEKLY_FILE)
-    write_output(monthly_avg, MONTHLY_FILE)
-
-    print("MTTR processing completed...")
-
-if __name__ == "__main__":
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    open(INVALID_LOG, "w").close()
-    process_mttr()
+    return result
