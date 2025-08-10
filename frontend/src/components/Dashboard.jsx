@@ -12,7 +12,9 @@ import {
   Tooltip,
   Legend,
   Filler,
+  TimeScale,
 } from "chart.js";
+import "chartjs-adapter-date-fns";
 import apiService from "../services/api";
 import { transformMetricsData, calculateAggregatedMetrics, mergeMetricsData } from "../utils/dataTransformer";
 
@@ -25,8 +27,46 @@ ChartJS.register(
   ArcElement,
   Tooltip,
   Legend,
-  Filler
+  Filler,
+  TimeScale
 );
+
+// Custom plugin for enhanced grid styling
+const enhancedGridPlugin = {
+  id: 'enhancedGrid',
+  beforeDraw: (chart) => {
+    const ctx = chart.ctx;
+    const chartArea = chart.chartArea;
+    
+    // Draw subtle background grid
+    ctx.save();
+    ctx.strokeStyle = 'rgba(55, 65, 81, 0.1)';
+    ctx.lineWidth = 0.5;
+    
+    // Vertical grid lines
+    for (let i = 0; i <= 10; i++) {
+      const x = chartArea.left + (chartArea.right - chartArea.left) * (i / 10);
+      ctx.beginPath();
+      ctx.moveTo(x, chartArea.top);
+      ctx.lineTo(x, chartArea.bottom);
+      ctx.stroke();
+    }
+    
+    // Horizontal grid lines
+    for (let i = 0; i <= 8; i++) {
+      const y = chartArea.top + (chartArea.bottom - chartArea.top) * (i / 8);
+      ctx.beginPath();
+      ctx.moveTo(chartArea.left, y);
+      ctx.lineTo(chartArea.right, y);
+      ctx.stroke();
+    }
+    
+    ctx.restore();
+  }
+};
+
+// Register the enhanced grid plugin
+ChartJS.register(enhancedGridPlugin);
 
 // Default date range for initial load (last 7 days)
 const getDefaultDateRange = () => {
@@ -44,35 +84,233 @@ const getDefaultDateRange = () => {
 const chartOptions = {
   responsive: true,
   maintainAspectRatio: false,
+  interaction: {
+    mode: 'index',
+    intersect: false,
+  },
   plugins: {
     legend: {
       labels: {
         color: '#d8d9da',
-        font: { size: 12, family: 'Inter' }
-      }
+        font: { size: 12, family: 'Inter', weight: '600' },
+        padding: 20,
+        usePointStyle: true,
+        pointStyle: 'circle'
+      },
+      position: 'top',
+      align: 'start'
     },
     tooltip: {
-      backgroundColor: '#1e1f22',
-      titleColor: '#d8d9da',
-      bodyColor: '#a4abb6',
-      borderColor: '#2c2e33',
+      backgroundColor: 'rgba(15, 17, 23, 0.98)',
+      titleColor: '#ffffff',
+      bodyColor: '#e1e5e9',
+      borderColor: '#5794f2',
       borderWidth: 1,
-      cornerRadius: 6,
+      cornerRadius: 8,
       displayColors: true,
-      titleFont: { size: 13, family: 'Inter' },
-      bodyFont: { size: 12, family: 'Inter' }
+      titleFont: { size: 14, family: 'Inter', weight: '700' },
+      bodyFont: { size: 13, family: 'Inter', weight: '500' },
+      padding: 16,
+      bodySpacing: 8,
+      callbacks: {
+        title: function(context) {
+          const date = new Date(context[0].label);
+          return date.toLocaleDateString('en-US', {
+            weekday: 'short',
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+          }) + ' ' + date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+          });
+        },
+        label: function(context) {
+          const label = context.dataset.label || '';
+          const value = context.parsed.y;
+          if (label.includes('Lead Time')) {
+            return `${label}: ${value.toFixed(2)} days`;
+          } else if (label.includes('MTTR')) {
+            return `${label}: ${value.toFixed(2)} hours`;
+          } else if (label.includes('Deployments')) {
+            return `${label}: ${value}`;
+          }
+          return `${label}: ${value}`;
+        }
+      }
     }
   },
   scales: {
     x: {
-      grid: { color: '#2c2e33', drawBorder: false },
-      ticks: { color: '#7a7f8b', font: { size: 11, family: 'Inter' } }
+      type: 'time',
+      time: {
+        unit: 'day',
+        displayFormats: {
+          day: 'MMM dd',
+          week: 'MMM dd',
+          month: 'MMM yyyy'
+        },
+        tooltipFormat: 'MMM dd, yyyy HH:mm'
+      },
+      grid: { 
+        color: 'rgba(55, 65, 81, 0.2)', 
+        drawBorder: false,
+        lineWidth: 1,
+        drawOnChartArea: true
+      },
+      ticks: { 
+        color: '#9ca3af', 
+        font: { size: 11, family: 'Inter', weight: '600' },
+        maxRotation: 0,
+        minRotation: 0,
+        padding: 8
+      },
+      border: {
+        color: '#374151',
+        width: 1
+      }
     },
     y: {
-      grid: { color: '#2c2e33', drawBorder: false },
-      ticks: { color: '#7a7f8b', font: { size: 11, family: 'Inter' } }
+      grid: { 
+        color: 'rgba(55, 65, 81, 0.15)', 
+        drawBorder: false,
+        lineWidth: 1,
+        drawOnChartArea: true
+      },
+      ticks: { 
+        color: '#9ca3af', 
+        font: { size: 11, family: 'Inter', weight: '600' },
+        padding: 8,
+        callback: function(value) {
+          return value.toLocaleString();
+        }
+      },
+      border: {
+        color: '#374151',
+        width: 1
+      },
+      beginAtZero: true
     }
+  },
+  elements: {
+    point: {
+      hoverRadius: 8,
+      hoverBorderWidth: 3,
+      hoverBorderColor: '#ffffff',
+      radius: 4,
+      borderWidth: 2,
+      borderColor: '#ffffff',
+      backgroundColor: '#ffffff'
+    },
+    line: {
+      tension: 0.2,
+      borderWidth: 2.5,
+      fill: false
+    },
+    bar: {
+      borderRadius: 4,
+      borderSkipped: false
+    }
+  },
+  animation: {
+    duration: 800,
+    easing: 'easeOutQuart'
+  },
+  hover: {
+    mode: 'index',
+    intersect: false,
+    animationDuration: 200
+  },
+  responsiveAnimationDuration: 800
+};
+
+// Enhanced chart options for specific chart types
+const getEnhancedChartOptions = (type) => {
+  const baseOptions = { ...chartOptions };
+  
+  // Add custom plugin for vertical line on hover (TradingView style)
+  const verticalLinePlugin = {
+    id: 'verticalLine',
+    beforeDraw: (chart) => {
+      if (chart.tooltip._active && chart.tooltip._active.length) {
+        const activePoint = chart.tooltip._active[0];
+        const ctx = chart.ctx;
+        const x = activePoint.element.x;
+        const topY = chart.scales.y.top;
+        const bottomY = chart.scales.y.bottom;
+        
+        // Draw main vertical line (crosshair)
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(x, topY);
+        ctx.lineTo(x, bottomY);
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = 'rgba(87, 148, 242, 0.9)';
+        ctx.stroke();
+        
+        // Draw horizontal line (crosshair)
+        const y = activePoint.element.y;
+        const leftX = chart.scales.x.left;
+        const rightX = chart.scales.x.right;
+        
+        ctx.beginPath();
+        ctx.moveTo(leftX, y);
+        ctx.lineTo(rightX, y);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(87, 148, 242, 0.6)';
+        ctx.setLineDash([3, 3]);
+        ctx.stroke();
+        
+        // Draw subtle background highlight
+        ctx.beginPath();
+        ctx.rect(x - 0.5, topY, 1, bottomY - topY);
+        ctx.fillStyle = 'rgba(87, 148, 242, 0.05)';
+        ctx.fill();
+        
+        ctx.restore();
+      }
+    }
+  };
+  
+  baseOptions.plugins = {
+    ...baseOptions.plugins,
+    verticalLine: verticalLinePlugin
+  };
+  
+  if (type === 'leadTime') {
+    baseOptions.scales.y.beginAtZero = false;
+    baseOptions.scales.y.ticks.callback = function(value) {
+      return `${value.toFixed(1)}d`;
+    };
+  } else if (type === 'mttr') {
+    baseOptions.scales.y.ticks.callback = function(value) {
+      return `${value.toFixed(1)}h`;
+    };
+  } else if (type === 'deployments') {
+    baseOptions.scales.y.ticks.callback = function(value) {
+      return Math.round(value);
+    };
+  } else if (type === 'failureRate') {
+    // Special configuration for CFR doughnut chart
+    baseOptions.plugins.tooltip = {
+      ...baseOptions.plugins.tooltip,
+      callbacks: {
+        ...baseOptions.plugins.tooltip.callbacks,
+        title: function() {
+          return 'Change Failure Rate';
+        },
+        label: function(context) {
+          const value = context.parsed;
+          const total = context.dataset.data.reduce((a, b) => a + b, 0);
+          const percentage = ((value / total) * 100).toFixed(1);
+          return `${context.label}: ${percentage}%`;
+        }
+      }
+    };
   }
+  
+  return baseOptions;
 };
 
 // ---- UI Components ----
@@ -176,7 +414,8 @@ const Dashboard = () => {
       };
     }
     
-    const labels = currentData.map(item => item.datetime);
+    // Convert datetime strings to Date objects for proper time scale
+    const labels = currentData.map(item => new Date(item.datetime));
     const data = currentData.map(item => item[type]);
 
     if (type === "deployments") {
@@ -185,11 +424,23 @@ const Dashboard = () => {
         datasets: [{
           label: "Deployments",
           data,
-          backgroundColor: "rgba(87, 148, 242, 0.8)",
+          backgroundColor: "rgba(87, 148, 242, 0.15)",
           borderColor: "#5794f2",
-          borderWidth: 2,
+          borderWidth: 3,
           borderRadius: 4,
-          fill: false
+          fill: true,
+          pointBackgroundColor: "#5794f2",
+          pointBorderColor: "#ffffff",
+          pointBorderWidth: 2,
+          pointRadius: 5,
+          pointHoverRadius: 8,
+          pointHoverBackgroundColor: "#ffffff",
+          pointHoverBorderColor: "#5794f2",
+          pointHoverBorderWidth: 3,
+          hoverBackgroundColor: "rgba(87, 148, 242, 0.25)",
+          hoverBorderColor: "#5794f2",
+          hoverBorderWidth: 4,
+          tension: 0.1
         }]
       };
     }
@@ -199,16 +450,22 @@ const Dashboard = () => {
         datasets: [{
           label: "Lead Time (days)",
           data,
-          borderColor: "#73bf69",
-          backgroundColor: "rgba(115, 191, 105, 0.1)",
+          borderColor: "#10b981",
+          backgroundColor: "rgba(16, 185, 129, 0.1)",
           borderWidth: 3,
           fill: true,
-          tension: 0.4,
-          pointBackgroundColor: "#73bf69",
-          pointBorderColor: "#1e1f22",
+          tension: 0.3,
+          pointBackgroundColor: "#10b981",
+          pointBorderColor: "#ffffff",
           pointBorderWidth: 2,
           pointRadius: 5,
-          pointHoverRadius: 7
+          pointHoverRadius: 8,
+          pointHoverBackgroundColor: "#ffffff",
+          pointHoverBorderColor: "#10b981",
+          pointHoverBorderWidth: 3,
+          hoverBackgroundColor: "rgba(16, 185, 129, 0.2)",
+          hoverBorderColor: "#10b981",
+          hoverBorderWidth: 4
         }]
       };
     }
@@ -219,10 +476,20 @@ const Dashboard = () => {
         labels: ["Success", "Failure"],
         datasets: [{
           data: [100 - failureRate, failureRate],
-          backgroundColor: ["rgba(115, 191, 105, 0.8)", "rgba(224, 47, 68, 0.8)"],
-          borderColor: ["#73bf69", "#e02f44"],
+          backgroundColor: [
+            "rgba(16, 185, 129, 0.9)", 
+            "rgba(239, 68, 68, 0.9)"
+          ],
+          borderColor: ["#10b981", "#ef4444"],
           borderWidth: 2,
-          hoverOffset: 4
+          hoverOffset: 12,
+          borderRadius: 6,
+          cutout: '65%',
+          hoverBackgroundColor: [
+            "rgba(16, 185, 129, 1)", 
+            "rgba(239, 68, 68, 1)"
+          ],
+          spacing: 2
         }]
       };
     }
@@ -232,11 +499,23 @@ const Dashboard = () => {
         datasets: [{
           label: "MTTR (hours)",
           data,
-          backgroundColor: "rgba(245, 158, 59, 0.8)",
-          borderColor: "#f59e3b",
-          borderWidth: 2,
+          backgroundColor: "rgba(245, 158, 11, 0.15)",
+          borderColor: "#f59e0b",
+          borderWidth: 3,
           borderRadius: 4,
-          fill: false
+          fill: true,
+          pointBackgroundColor: "#f59e0b",
+          pointBorderColor: "#ffffff",
+          pointBorderWidth: 2,
+          pointRadius: 5,
+          pointHoverRadius: 8,
+          pointHoverBackgroundColor: "#ffffff",
+          pointHoverBorderColor: "#f59e0b",
+          pointHoverBorderWidth: 3,
+          hoverBackgroundColor: "rgba(245, 158, 11, 0.25)",
+          hoverBorderColor: "#f59e0b",
+          hoverBorderWidth: 4,
+          tension: 0.1
         }]
       };
     }
@@ -446,8 +725,8 @@ const Dashboard = () => {
               <button className="panel-action-btn" aria-label="More options">⋮</button>
             </div>
           </div>
-          <div className="chart-container">
-            <Bar data={getChartData("deployments")} options={chartOptions} />
+          <div className={`chart-container ${loading ? 'loading' : ''}`}>
+            <Bar data={getChartData("deployments")} options={getEnhancedChartOptions("deployments")} />
           </div>
         </div>
         <div className="chart-panel grafana-panel">
@@ -457,8 +736,8 @@ const Dashboard = () => {
               <button className="panel-action-btn" aria-label="More options">⋮</button>
             </div>
           </div>
-          <div className="chart-container">
-            <Line data={getChartData("leadTime")} options={chartOptions} />
+          <div className={`chart-container ${loading ? 'loading' : ''}`}>
+            <Line data={getChartData("leadTime")} options={getEnhancedChartOptions("leadTime")} />
           </div>
         </div>
         <div className="chart-panel grafana-panel">
@@ -468,8 +747,8 @@ const Dashboard = () => {
               <button className="panel-action-btn" aria-label="More options">⋮</button>
             </div>
           </div>
-          <div className="chart-container">
-            <Doughnut data={getChartData("failureRate")} options={chartOptions} />
+          <div className={`chart-container ${loading ? 'loading' : ''}`}>
+            <Doughnut data={getChartData("failureRate")} options={getEnhancedChartOptions("failureRate")} />
           </div>
         </div>
         <div className="chart-panel grafana-panel">
@@ -479,8 +758,8 @@ const Dashboard = () => {
               <button className="panel-action-btn" aria-label="More options">⋮</button>
             </div>
           </div>
-          <div className="chart-container">
-            <Bar data={getChartData("mttr")} options={chartOptions} />
+          <div className={`chart-container ${loading ? 'loading' : ''}`}>
+            <Bar data={getChartData("mttr")} options={getEnhancedChartOptions("mttr")} />
           </div>
         </div>
       </div>
