@@ -1,0 +1,68 @@
+/* C:\Programming\AnaMetric\frontend\src\components\Contact.css */
+@import url('../styles/variables.css');
+
+/* Contact.css - Grafana-style Light Theme */
+.info-page {
+  max-width: 720px;
+  margin: 2rem auto 4rem;
+  padding: 1.75rem 2.5rem;
+  background: var(--grafana-bg-secondary);
+  border-radius: 12px;
+  box-shadow: var(--grafana-shadow-medium);
+  color: var(--grafana-text-primary);
+  line-height: 1.65;
+  user-select: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 1.05rem;
+}
+
+/* Heading style */
+.info-page h2 {
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  color: var(--grafana-text-primary);
+  user-select: text;
+  font-size: 1.6rem;
+  letter-spacing: 0.03em;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Paragraph text */
+.info-page p {
+  color: var(--grafana-text-primary);
+  margin-bottom: 1.25rem;
+  user-select: text;
+  font-weight: 400;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Links styling */
+.info-page a {
+  color: var(--grafana-text-primary);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+
+.info-page a:hover,
+.info-page a:focus {
+  color: var(--grafana-accent-blue);
+  text-decoration: underline;
+  outline: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .info-page {
+    margin: 1.5rem 1rem 3rem;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+  }
+
+  .info-page h2 {
+    font-size: 1.4rem;
+  }
+}

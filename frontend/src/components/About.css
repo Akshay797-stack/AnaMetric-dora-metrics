@@ -1,0 +1,115 @@
+@import url("../styles/variables.css");
+
+/* About.css - Grafana-inspired Dark Theme consistent with Dashboard.css font-family */
+
+/* Card Container */
+/* Apple/Grafana-inspired info card */
+.info-page {
+  max-width: 720px;
+  margin: 2.5rem auto 4rem;
+  padding: 2.25rem 2.5rem;
+  /* background: var(--grafana-accent-blue); */
+  background: var(--grafana-bg-card);
+  border-radius: 18px;
+  box-shadow: var(--grafana-shadow-medium);
+  color: var(--grafana-text-primary);
+  line-height: 1.7;
+  user-select: text;
+  transition: background 0.3s, color 0.3s;
+  font-family: var(--font-family);
+  font-size: 1.08rem;
+}
+
+/* Headings */
+.info-page h2 {
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  color: var(--grafana-accent-blue);
+  user-select: text;
+  font-size: 1.6rem;
+  letter-spacing: 0.03em;
+  text-shadow: 0 2px 6px rgba(87, 148, 242, 0.3);
+}
+
+/* Paragraphs */
+.info-page p {
+  color: var(--grafana-text-primary);
+  margin-bottom: 1.25rem;
+  user-select: text;
+  font-weight: 400;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Links */
+.info-page a {
+  color: var(--grafana-accent-blue);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+
+.info-page a:hover,
+.info-page a:focus {
+  color: #3461a4;
+  text-decoration: underline;
+  outline: none;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .info-page {
+    margin: 1.5rem 1rem 3rem;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+  }
+
+  .info-page h2 {
+    font-size: 1.4rem;
+  }
+}
+
+.info-page h2 {
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  color: var(--grafana-accent-blue);
+  user-select: text;
+  font-size: 1.7rem;
+  letter-spacing: 0.01em;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.info-page p {
+  color: var(--grafana-text-primary);
+  margin-bottom: 1.25rem;
+  user-select: text;
+  font-weight: 400;
+  line-height: 1.7;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+.info-page a {
+  color: var(--grafana-accent-blue);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.22s;
+}
+.info-page a:hover,
+.info-page a:focus-visible {
+  color: var(--grafana-accent-purple);
+  text-decoration: underline;
+  outline: none;
+}
+
+@media (max-width: 700px) {
+  .info-page {
+    padding: 1.25rem 0.5rem;
+    border-radius: 10px;
+    font-size: 1rem;
+  }
+  .info-page h2 {
+    font-size: 1.4rem;
+  }
+}

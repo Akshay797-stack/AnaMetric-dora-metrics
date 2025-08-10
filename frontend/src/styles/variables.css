@@ -1,0 +1,78 @@
+C:\Programming\AnaMetric\frontend\src\styles\variables.css
+/* Centralized CSS Variables for AnaMetric */
+
+/* Light Theme (Default) - Apple/Grafana inspired */
+:root,
+body.light {
+  /* Backgrounds */
+  --grafana-bg-primary: #f5f5f5;
+  --grafana-bg-secondary: #ffffff;
+  --grafana-bg-tertiary: #f0f0f0;
+  --grafana-bg-hover: #e0e0e0;
+  --grafana-bg-card: #ffffff;
+  --grafana-bg-panel: #ffffff;
+
+  /* Borders */
+  --grafana-border-primary: #d0d0d0;
+  --grafana-border-secondary: #c0c0c0;
+
+  /* Text */
+  --grafana-text-primary: #2c2c2c;
+  --grafana-text-secondary: #666666;
+  --grafana-text-muted: #999999;
+
+  /* Accents - Now Monochrome */
+  --grafana-accent-blue: #4a4a4a;
+  --grafana-accent-green: #333333;
+  --grafana-accent-orange: #555555;
+  --grafana-accent-red: #333333;
+  --grafana-accent-purple: #444444;
+  --grafana-accent-cyan: #333333;
+
+  /* Shadows - Adjusted for light theme */
+  --grafana-shadow-light: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --grafana-shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.12);
+  --grafana-shadow-heavy: 0 8px 16px rgba(0, 0, 0, 0.15);
+
+  /* Legacy variables for compatibility */
+  --color-bg-card: var(--grafana-bg-card);
+  --color-text: var(--grafana-text-primary);
+  --color-primary: var(--grafana-accent-blue);
+
+  /* Font */
+  --font-family: "Inter", sans-serif;
+}
+
+/* Dark Theme - Apple/Grafana inspired */
+body.dark {
+  --grafana-bg-primary: #181a1b;
+  --grafana-bg-secondary: #23272e;
+  --grafana-bg-tertiary: #22262c;
+  --grafana-bg-hover: #23272e;
+  --grafana-bg-card: #23272e;
+  --grafana-bg-panel: #23272e;
+
+  --grafana-border-primary: #2c313a;
+  --grafana-border-secondary: #23272e;
+
+  --grafana-text-primary: #f5f6fa;
+  --grafana-text-secondary: #bfc7d5;
+  --grafana-text-muted: #7a869a;
+
+  --grafana-accent-blue: #4f8cff;
+  --grafana-accent-green: #2ecc40;
+  --grafana-accent-orange: #ffb347;
+  --grafana-accent-red: #ff5f56;
+  --grafana-accent-purple: #a259ff;
+  --grafana-accent-cyan: #00bcd4;
+
+  --grafana-shadow-light: 0 1px 3px rgba(0, 0, 0, 0.25);
+  --grafana-shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.32);
+  --grafana-shadow-heavy: 0 8px 16px rgba(0, 0, 0, 0.45);
+
+  --color-bg-card: var(--grafana-bg-card);
+  --color-text: var(--grafana-text-primary);
+  --color-primary: var(--grafana-accent-blue);
+
+  --font-family: "Inter", sans-serif;
+}

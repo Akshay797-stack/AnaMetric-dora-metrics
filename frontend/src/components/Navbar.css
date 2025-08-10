@@ -1,0 +1,351 @@
+/* Theme Toggle Button */
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: none;
+  background: var(--grafana-bg-tertiary);
+  color: var(--grafana-accent-blue);
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  box-shadow: var(--grafana-shadow-light);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.theme-toggle-btn.light {
+  background: var(--grafana-bg-tertiary);
+  color: var(--grafana-accent-blue);
+}
+.theme-toggle-btn.dark {
+  background: var(--grafana-bg-secondary);
+  color: var(--grafana-accent-blue);
+}
+.theme-toggle-btn:hover,
+.theme-toggle-btn:focus-visible {
+  background: var(--grafana-bg-hover);
+  color: var(--grafana-accent-purple);
+  outline: none;
+  box-shadow: var(--grafana-shadow-medium);
+}
+.theme-toggle-btn svg {
+  display: block;
+  width: 22px;
+  height: 22px;
+}
+/* C:\Programming\AnaMetric\frontend\src\components\Navbar.css */
+@import url("../styles/variables.css");
+
+/* Grafana-like Navbar Styles - Aligned with Dashboard.css Theme */
+.grafana-navbar {
+  background: var(--grafana-bg-secondary);
+  border-bottom: 1.5px solid var(--grafana-border-primary);
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--grafana-shadow-light);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  user-select: none;
+}
+
+/* Brand Section */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: var(--grafana-text-primary);
+  font-weight: 700;
+  font-size: 1.125rem;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.brand-link:hover,
+.brand-link:focus-visible {
+  color: var(--grafana-accent-blue);
+  text-decoration: none;
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.brand-icon {
+  font-size: 1.5rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--grafana-bg-tertiary);
+  border-radius: 8px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--grafana-text-primary);
+  box-shadow: var(--grafana-shadow-light);
+}
+
+.brand-link:hover .brand-icon,
+.brand-link:focus-visible .brand-icon {
+  background: var(--grafana-bg-hover);
+  color: var(--grafana-text-primary);
+  transform: scale(1.08);
+  box-shadow: var(--grafana-shadow-medium);
+  outline: none;
+}
+
+.brand-text {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  user-select: none;
+}
+
+/* Navigation Links */
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-links li {
+  margin: 0;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.1rem;
+  color: var(--grafana-text-secondary);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600;
+  font-size: 0.9rem;
+  position: relative;
+  user-select: none;
+}
+
+.nav-link:hover,
+.nav-link:focus-visible {
+  color: var(--grafana-text-primary);
+  background: var(--grafana-bg-hover);
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: var(--grafana-shadow-medium);
+  outline: none;
+}
+
+.nav-link.active {
+  color: var(--grafana-text-primary);
+  background: var(--grafana-bg-tertiary);
+  border: 1.5px solid var(--grafana-border-primary);
+  box-shadow: var(--grafana-shadow-light);
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.nav-icon {
+  font-size: 1rem;
+  width: 1.3rem;
+  height: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: currentColor;
+  user-select: none;
+  transition: transform 0.22s ease;
+}
+
+.nav-link:hover .nav-icon,
+.nav-link:focus-visible .nav-icon {
+  transform: scale(1.15);
+}
+
+.nav-text {
+  font-size: 0.9rem;
+  user-select: text;
+}
+
+/* Navbar Actions */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.action-btn {
+  background: none;
+  border: none;
+  color: var(--grafana-text-muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  user-select: none;
+}
+
+.action-btn:hover,
+.action-btn:focus-visible {
+  background: var(--grafana-bg-hover);
+  color: var(--grafana-text-primary);
+  transform: translateY(-2px) scale(1.1);
+  box-shadow: var(--grafana-shadow-medium);
+  outline: none;
+}
+
+/* User Menu */
+.user-menu {
+  display: flex;
+  align-items: center;
+}
+
+.user-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: var(--grafana-bg-tertiary);
+  border: 1.5px solid var(--grafana-border-primary);
+  color: var(--grafana-text-primary);
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.9rem;
+  font-weight: 600;
+  user-select: none;
+}
+
+.user-btn:hover,
+.user-btn:focus-visible {
+  background: var(--grafana-bg-hover);
+  border-color: var(--grafana-border-secondary);
+  transform: translateY(-1.5px);
+  box-shadow: var(--grafana-shadow-medium);
+  outline: none;
+}
+
+.user-avatar {
+  font-size: 1rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--grafana-accent-blue);
+  border-radius: 50%;
+  color: var(--grafana-bg-primary);
+  font-size: 0.85rem;
+  user-select: none;
+  transition: transform 0.22s ease;
+}
+
+.user-btn:hover .user-avatar,
+.user-btn:focus-visible .user-avatar {
+  transform: scale(1.1);
+}
+
+/* User name text */
+.user-name {
+  font-weight: 600;
+  user-select: text;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .grafana-navbar {
+    padding: 0 1rem;
+  }
+  .nav-text {
+    display: none;
+  }
+  .nav-link {
+    padding: 0.75rem;
+  }
+  .brand-text {
+    display: none;
+  }
+  .user-name {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .grafana-navbar {
+    padding: 0 0.75rem;
+    height: 50px;
+  }
+  .navbar-links {
+    gap: 0.5rem;
+  }
+  .nav-link {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+  .action-btn {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.1rem;
+  }
+  .user-btn {
+    padding: 0.35rem 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .grafana-navbar {
+    padding: 0 0.5rem;
+  }
+  .navbar-links {
+    gap: 0.25rem;
+  }
+  .nav-link {
+    padding: 0.4rem;
+    font-size: 0.8rem;
+  }
+  .action-btn {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Active state underline indicator */
+.nav-link.active::before {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 2.5px;
+  background: var(--grafana-border-secondary);
+  border-radius: 1.5px;
+}
+
+/* Smooth scaling */
+.action-btn:hover {
+  transform: scale(1.07);
+}
+
+.user-btn:hover .user-avatar {
+  transform: scale(1.12);
+}
