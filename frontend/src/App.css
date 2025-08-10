@@ -1,0 +1,115 @@
+/* Micro-interactions & accessibility enhancements */
+button, .action-btn, .theme-toggle-btn, .user-btn, .filter-btn, .card, .nav-link {
+  transition: background 0.18s, color 0.18s, box-shadow 0.22s, transform 0.18s;
+  outline: none;
+}
+button:focus-visible, .action-btn:focus-visible, .theme-toggle-btn:focus-visible, .user-btn:focus-visible, .filter-btn:focus-visible, .card:focus-within, .nav-link:focus-visible {
+  box-shadow: 0 0 0 3px var(--grafana-accent-blue), var(--grafana-shadow-medium);
+  outline: none;
+  z-index: 2;
+}
+button:active, .action-btn:active, .theme-toggle-btn:active, .user-btn:active, .filter-btn:active, .card:active, .nav-link:active {
+  transform: scale(0.97);
+}
+.nav-link {
+  border-radius: 8px;
+  padding: 0.35rem 0.9rem;
+  transition: background 0.18s, color 0.18s;
+}
+.nav-link:hover, .nav-link:focus-visible {
+  background: var(--grafana-bg-hover);
+  color: var(--grafana-accent-blue);
+  text-decoration: none;
+}
+.action-btn {
+  border-radius: 50%;
+  transition: background 0.18s, color 0.18s, box-shadow 0.22s;
+}
+.action-btn:focus-visible {
+  background: var(--grafana-bg-hover);
+  color: var(--grafana-accent-purple);
+}
+@import url('../styles/variables.css');
+
+body, html {
+  background: var(--grafana-bg-primary);
+  color: var(--grafana-text-primary);
+  font-family: var(--font-family);
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  transition: background 0.3s, color 0.3s;
+}
+
+.app {
+  min-height: 100vh;
+  background: var(--grafana-bg-primary);
+  display: flex;
+  flex-direction: column;
+  transition: background 0.3s;
+}
+
+.main-content {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 2rem 1.5rem;
+  background: var(--grafana-bg-secondary);
+  border-radius: 18px;
+  box-shadow: var(--grafana-shadow-medium);
+  transition: background 0.3s, color 0.3s;
+}
+
+@media (max-width: 900px) {
+  .main-content {
+    padding: 1.5rem 0.5rem 1rem 0.5rem;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+/* Modern Apple/Grafana Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family);
+  font-weight: 700;
+  color: var(--grafana-accent-blue);
+  letter-spacing: 0.01em;
+  margin-top: 0;
+  margin-bottom: 1.2rem;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.07);
+}
+
+p, li, span, label, input, button {
+  font-family: var(--font-family);
+  color: var(--grafana-text-primary);
+  font-size: 1.05rem;
+  line-height: 1.65;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+/* Removed legacy About styles and fixed misplaced rules */
+
+/* Responsive */
+@media (max-width: 640px) {
+  .info-page {
+    margin: 1.5rem 1rem 3rem;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+  }
+
+  .info-page h2 {
+    font-size: 1.4rem;
+  }
+}
+
+/* Light Theme Overrides */
+body.light .info-page {
+  background: var(--grafana-bg-secondary);
+  color: var(--grafana-text-primary);
+}
+
+body.light .info-page h2 {
+  color: var(--grafana-text-primary);
+}

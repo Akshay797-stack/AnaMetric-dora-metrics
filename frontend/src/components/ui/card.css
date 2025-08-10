@@ -1,0 +1,49 @@
+/* C:\Programming\AnaMetric\frontend\src\components\ui\card.css */
+@import url('../../styles/variables.css');
+
+/* Card.css */
+.bg-white {
+  background-color: var(--grafana-bg-card) !important;
+}
+
+.rounded-xl {
+  border-radius: 1px;
+}
+
+.shadow-md {
+  box-shadow: var(--grafana-shadow-medium);
+  transition: box-shadow 0.3s ease;
+}
+
+.bg-white:hover,
+.bg-white:focus-within {
+  box-shadow: var(--grafana-shadow-heavy);
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--grafana-bg-card);
+  border-radius: 12px;
+  box-shadow: var(--grafana-shadow-medium);
+  padding: 1rem;
+  transition: box-shadow 0.3s ease;
+  color: var(--grafana-text-primary);
+}
+
+.card:hover,
+.card:focus-within {
+  box-shadow: var(--grafana-shadow-heavy);
+}
+
+.cardContent {
+  margin-top: 0.5rem;
+}

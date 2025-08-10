@@ -1,0 +1,215 @@
+/* C:\Programming\AnaMetric\frontend\src\components\Footer.css */
+@import url('../styles/variables.css');
+
+/* Grafana-like Footer Styles - Aligned with Dashboard.css theme */
+.grafana-footer {
+  background: var(--grafana-bg-secondary);
+  border-top: 1.5px solid var(--grafana-border-primary);
+  padding: 3rem 2rem 2rem;
+  margin-top: auto;
+  box-shadow: var(--grafana-shadow-light);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--grafana-text-secondary);
+  user-select: none;
+}
+
+.footer-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+  text-align: center;
+  color: var(--grafana-text-muted);
+  font-size: 0.9rem;
+}
+
+.social-icons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.social-icons a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: var(--grafana-bg-tertiary);
+  border: 1.5px solid var(--grafana-border-primary);
+  border-radius: 10px;
+  color: var(--grafana-text-muted);
+  text-decoration: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--grafana-shadow-light);
+}
+
+.social-icons a:hover,
+.social-icons a:focus-visible {
+  background: var(--grafana-bg-hover);
+  color: var(--grafana-text-primary);
+  transform: translateY(-2px) scale(1.07);
+  box-shadow: var(--grafana-shadow-heavy);
+  border-color: var(--grafana-border-secondary);
+  outline: none;
+}
+
+.footer-links {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: var(--grafana-text-secondary);
+  font-weight: 500;
+}
+
+.footer-links a {
+  color: var(--grafana-text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.25s ease, transform 0.22s ease;
+  position: relative;
+  padding-bottom: 2px;
+}
+
+.footer-links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: var(--grafana-accent-blue);
+  transition: width 0.3s ease;
+}
+
+.footer-links a:hover,
+.footer-links a:focus-visible {
+  color: var(--grafana-accent-blue);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.footer-links a:hover::after,
+.footer-links a:focus-visible::after {
+  width: 100%;
+}
+
+.copyright {
+  color: var(--grafana-text-muted);
+  font-size: 0.875rem;
+  margin: 0;
+  text-align: center;
+  user-select: none;
+}
+
+/* Footer Grid for columns */
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 1.5rem;
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.footer-column h3 {
+  color: var(--grafana-text-primary);
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 0.65rem 0;
+  letter-spacing: -0.025em;
+  user-select: text;
+}
+
+.footer-column a {
+  color: var(--grafana-text-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.25s ease;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  user-select: text;
+}
+
+.footer-column a:hover,
+.footer-column a:focus-visible {
+  color: var(--grafana-accent-blue);
+  background: var(--grafana-bg-hover);
+  padding-left: 1rem;
+  transform: translateX(2px);
+  outline: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .grafana-footer {
+    padding: 2rem 1rem 1.5rem;
+  }
+  .footer-info {
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .social-icons {
+    gap: 0.75rem;
+  }
+  .social-icons a {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+  .footer-links {
+    gap: 1rem;
+    flex-direction: column;
+  }
+  .footer-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .grafana-footer {
+    padding: 1.5rem 0.75rem 1rem;
+  }
+  .social-icons {
+    gap: 0.5rem;
+  }
+  .social-icons a {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .footer-column {
+    text-align: center;
+  }
+  .footer-column a:hover,
+  .footer-column a:focus-visible {
+    padding-left: 0;
+    transform: none;
+  }
+}
+
+/* Accessibility focus */
+.social-icons a:focus-visible,
+.footer-links a:focus-visible {
+  outline: 2px solid var(--grafana-accent-blue);
+  outline-offset: 3px;
+}
+
+/* Smooth transitions */
+.social-icons a,
+.footer-links a {
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;
+}

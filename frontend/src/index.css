@@ -1,0 +1,55 @@
+/* Light Theme Overrides */
+body.light {
+  background-color: var(--grafana-bg-primary);
+  color: var(--grafana-text-primary);
+}
+
+body.light .grafana-dashboard {
+  background: var(--grafana-bg-primary);
+  color: var(--grafana-text-primary);
+}
+
+body.light .main-content {
+  background: var(--grafana-bg-primary);
+}
+
+body.light .info-page {
+  background: var(--grafana-bg-secondary);
+  color: var(--grafana-text-primary);
+}
+
+body.light .metrics-row,
+body.light .charts-grid {
+  background: var(--grafana-bg-primary);
+}
+
+body.light .dashboard-header,
+body.light .filter-section,
+body.light .grafana-footer,
+body.light .grafana-navbar,
+body.light .grafana-breadcrumbs {
+  background: var(--grafana-bg-secondary);
+}
+
+/* Ensure card-like elements also have a light background */
+body.light .metric-card,
+body.light .chart-panel {
+  background: var(--grafana-bg-card);
+  border: 1.5px solid var(--grafana-border-primary);
+  box-shadow: var(--grafana-shadow-light);
+}
+
+body.light .filter-chip {
+  background: var(--grafana-bg-hover);
+  color: var(--grafana-text-primary);
+  box-shadow: var(--grafana-shadow-light);
+}
+
+body.light .filter-chip-remove {
+  color: var(--grafana-text-secondary);
+}
+
+body.light .filter-modal {
+  background: var(--grafana-bg-secondary);
+  box-shadow: var(--grafana-shadow-medium);
+}
