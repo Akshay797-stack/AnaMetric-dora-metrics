@@ -30,7 +30,7 @@ const Navbar = () => {
               <path d="M8 17v-3" />
             </svg>
           </div>
-          <span className="brand-text">ANAMETRIC</span>
+          <span className="brand-text">AnaMetrix</span>
         </Link>
       </div>
       <ul className="navbar-links">
