@@ -5,9 +5,9 @@ import "./About.css";
 const About = () => {
   return (
     <div className="info-page">
-      <h2>About ANAMETRIC</h2>
+      <h2>About AnaMetrix</h2>
       <p>
-        ANAMETRIC is a modern DevOps metrics dashboard inspired by Grafana,
+        AnaMetrix is a modern DevOps metrics dashboard inspired by Grafana,
         designed to track and visualize DORA metrics like Deployment Frequency,
         Lead Time, MTTR, and Change Failure Rate.
       </p>

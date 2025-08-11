@@ -6,9 +6,9 @@ const Contact = () => {
   return (
     <div className="info-page">
       <h2>Contact Us</h2>
-      <p>Email: support@anametric.dev</p>
-      <p>Twitter: @anametric</p>
-      <p>GitHub: github.com/anametric</p>
+      <p>Email: support@anametrix.dev</p>
+      <p>Twitter: @anametrix</p>
+      <p>GitHub: github.com/anametrix</p>
     </div>
   );
 };

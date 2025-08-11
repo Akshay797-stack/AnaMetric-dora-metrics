@@ -70,7 +70,7 @@ const Home = () => {
               <path d="M8 17v-3"/>
             </svg>
           </div>
-          <h1 className="hero-title">ANAMETRIC</h1>
+          <h1 className="hero-title">AnaMetrix</h1>
           <p className="hero-subtitle">
             Advanced DORA metrics visualization and analytics platform
           </p>

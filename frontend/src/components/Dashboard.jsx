@@ -292,7 +292,7 @@ const getEnhancedChartOptions = (type) => {
       return Math.round(value);
     };
   } else if (type === 'failureRate') {
-    // Special configuration for CFR doughnut chart
+    // Special configuration for CFR doughnut chart - no axes needed
     baseOptions.plugins.tooltip = {
       ...baseOptions.plugins.tooltip,
       callbacks: {
@@ -306,6 +306,91 @@ const getEnhancedChartOptions = (type) => {
           const percentage = ((value / total) * 100).toFixed(1);
           return `${context.label}: ${percentage}%`;
         }
+      }
+    };
+    // Remove scales for doughnut chart
+    baseOptions.scales = {};
+  } else if (type === 'deployments') {
+    // Deployments chart: Y-axis shows count, X-axis shows dates
+    baseOptions.scales.y = {
+      ...baseOptions.scales.y,
+      type: 'linear',
+      title: {
+        display: true,
+        text: 'Number of Deployments',
+        color: '#9ca3af',
+        font: { size: 12, family: 'Inter', weight: '600' }
+      },
+      ticks: {
+        ...baseOptions.scales.y.ticks,
+        callback: function(value) {
+          return Math.round(value);
+        }
+      },
+      beginAtZero: true
+    };
+    baseOptions.scales.x = {
+      ...baseOptions.scales.x,
+      type: 'time',
+      title: {
+        display: true,
+        text: 'Date',
+        color: '#9ca3af',
+        font: { size: 12, family: 'Inter', weight: '600' }
+      }
+    };
+    // Ensure Y-axis starts from 0 for count data
+    baseOptions.scales.y.beginAtZero = true;
+  } else if (type === 'leadTime') {
+    // Lead Time chart: Y-axis shows days, X-axis shows dates
+    baseOptions.scales.y = {
+      ...baseOptions.scales.y,
+      title: {
+        display: true,
+        text: 'Lead Time (Days)',
+        color: '#9ca3af',
+        font: { size: 12, family: 'Inter', weight: '600' }
+      },
+      ticks: {
+        ...baseOptions.scales.y.ticks,
+        callback: function(value) {
+          return `${value.toFixed(1)}d`;
+        }
+      }
+    };
+    baseOptions.scales.x = {
+      ...baseOptions.scales.x,
+      title: {
+        display: true,
+        text: 'Date',
+        color: '#9ca3af',
+        font: { size: 12, family: 'Inter', weight: '600' }
+      }
+    };
+  } else if (type === 'mttr') {
+    // MTTR chart: Y-axis shows hours, X-axis shows dates
+    baseOptions.scales.y = {
+      ...baseOptions.scales.y,
+      title: {
+        display: true,
+        text: 'MTTR (Hours)',
+        color: '#9ca3af',
+        font: { size: 12, family: 'Inter', weight: '600' }
+      },
+      ticks: {
+        ...baseOptions.scales.y.ticks,
+        callback: function(value) {
+          return `${value.toFixed(1)}h`;
+        }
+      }
+    };
+    baseOptions.scales.x = {
+      ...baseOptions.scales.x,
+      title: {
+        display: true,
+        text: 'Date',
+        color: '#9ca3af',
+        font: { size: 12, family: 'Inter', weight: '600' }
       }
     };
   }
@@ -354,6 +439,12 @@ const Dashboard = () => {
   const [metricsData, setMetricsData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  
+  // State for detail modals
+  const [showDeploymentsDetail, setShowDeploymentsDetail] = useState(false);
+  const [showLeadTimeDetail, setShowLeadTimeDetail] = useState(false);
+  const [showMTTRDetail, setShowMTTRDetail] = useState(false);
+  const [showFailureRateDetail, setShowFailureRateDetail] = useState(false);
 
   // Helper: convert datetime-local format "YYYY-MM-DDTHH:mm" to "YYYY-MM-DD HH:mm:ss"
   const formatForCompare = (dt) => dt ? dt.replace("T", " ") + (dt.length === 16 ? ":00" : "") : "";
@@ -591,6 +682,196 @@ const Dashboard = () => {
     );
   };
 
+  // Deployments Detail Modal
+  const DeploymentsDetailModal = () => (
+    <div className="filter-modal-overlay" onClick={() => setShowDeploymentsDetail(false)}>
+      <div className="filter-modal detail-modal" onClick={e => e.stopPropagation()}>
+        <div className="filter-modal-header">
+          <h3>Deployment Frequency - Detailed Analysis</h3>
+          <button className="filter-modal-close" onClick={() => setShowDeploymentsDetail(false)} aria-label="Close Detail Modal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div className="filter-modal-content">
+          <div className="detail-section">
+            <h4>Summary</h4>
+            <div className="detail-grid">
+              <div className="detail-item">
+                <span className="detail-label">Total Deployments:</span>
+                <span className="detail-value">{deploymentsSum}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Date Range:</span>
+                <span className="detail-value">{startDate && endDate ? `${formatForCompare(startDate)} - ${formatForCompare(endDate)}` : 'N/A'}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Average per Day:</span>
+                <span className="detail-value">{currentData.length > 0 ? (deploymentsSum / currentData.length).toFixed(2) : 'N/A'}</span>
+              </div>
+            </div>
+          </div>
+          <div className="detail-section">
+            <h4>Deployment Timeline</h4>
+            <div className="timeline-container">
+              {currentData.map((item, index) => (
+                <div key={index} className="timeline-item">
+                  <div className="timeline-date">{new Date(item.datetime).toLocaleDateString()}</div>
+                  <div className="timeline-value">{item.deployments} deployments</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Lead Time Detail Modal
+  const LeadTimeDetailModal = () => (
+    <div className="filter-modal-overlay" onClick={() => setShowLeadTimeDetail(false)}>
+      <div className="filter-modal detail-modal" onClick={e => e.stopPropagation()}>
+        <div className="filter-modal-header">
+          <h3>Lead Time for Changes - Detailed Analysis</h3>
+          <button className="filter-modal-close" onClick={() => setShowLeadTimeDetail(false)} aria-label="Close Detail Modal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div className="filter-modal-content">
+          <div className="detail-section">
+            <h4>Summary</h4>
+            <div className="detail-grid">
+              <div className="detail-item">
+                <span className="detail-label">Average Lead Time:</span>
+                <span className="detail-value">{avgLeadTime} days</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Date Range:</span>
+                <span className="detail-value">{startDate && endDate ? `${formatForCompare(startDate)} - ${formatForCompare(endDate)}` : 'N/A'}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Data Points:</span>
+                <span className="detail-value">{currentData.length}</span>
+              </div>
+            </div>
+          </div>
+          <div className="detail-section">
+            <h4>Lead Time Trends</h4>
+            <div className="timeline-container">
+              {currentData.map((item, index) => (
+                <div key={index} className="timeline-item">
+                  <div className="timeline-date">{new Date(item.datetime).toLocaleDateString()}</div>
+                  <div className="timeline-value">{item.leadTime?.toFixed(2) || 'N/A'} days</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // MTTR Detail Modal
+  const MTTRDetailModal = () => (
+    <div className="filter-modal-overlay" onClick={() => setShowMTTRDetail(false)}>
+      <div className="filter-modal detail-modal" onClick={e => e.stopPropagation()}>
+        <div className="filter-modal-header">
+          <h3>Mean Time to Recovery - Detailed Analysis</h3>
+          <button className="filter-modal-close" onClick={() => setShowMTTRDetail(false)} aria-label="Close Detail Modal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div className="filter-modal-content">
+          <div className="detail-section">
+            <h4>Summary</h4>
+            <div className="detail-grid">
+              <div className="detail-item">
+                <span className="detail-label">Average MTTR:</span>
+                <span className="detail-value">{avgMttr} hours</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Date Range:</span>
+                <span className="detail-value">{startDate && endDate ? `${formatForCompare(startDate)} - ${formatForCompare(endDate)}` : 'N/A'}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Data Points:</span>
+                <span className="detail-value">{currentData.length}</span>
+              </div>
+            </div>
+          </div>
+          <div className="detail-section">
+            <h4>Recovery Time Trends</h4>
+            <div className="timeline-container">
+              {currentData.map((item, index) => (
+                <div key={index} className="timeline-item">
+                  <div className="timeline-date">{new Date(item.datetime).toLocaleDateString()}</div>
+                  <div className="timeline-value">{item.mttr?.toFixed(2) || 'N/A'} hours</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Failure Rate Detail Modal
+  const FailureRateDetailModal = () => (
+    <div className="filter-modal-overlay" onClick={() => setShowFailureRateDetail(false)}>
+      <div className="filter-modal detail-modal" onClick={e => e.stopPropagation()}>
+        <div className="filter-modal-header">
+          <h3>Change Failure Rate - Detailed Analysis</h3>
+          <button className="filter-modal-close" onClick={() => setShowFailureRateDetail(false)} aria-label="Close Detail Modal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div className="filter-modal-content">
+          <div className="detail-section">
+            <h4>Summary</h4>
+            <div className="detail-grid">
+              <div className="detail-item">
+                <span className="detail-label">Current Failure Rate:</span>
+                <span className="detail-value">{avgFailureRate}%</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Success Rate:</span>
+                <span className="detail-value">{100 - (avgFailureRate || 0)}%</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Date Range:</span>
+                <span className="detail-value">{startDate && endDate ? `${formatForCompare(startDate)} - ${formatForCompare(endDate)}` : 'N/A'}</span>
+              </div>
+            </div>
+          </div>
+          <div className="detail-section">
+            <h4>Failure Rate Analysis</h4>
+            <div className="failure-rate-breakdown">
+              <div className="failure-rate-item success">
+                <span className="failure-rate-label">Successful Changes</span>
+                <span className="failure-rate-value">{100 - (avgFailureRate || 0)}%</span>
+              </div>
+              <div className="failure-rate-item failure">
+                <span className="failure-rate-label">Failed Changes</span>
+                <span className="failure-rate-value">{avgFailureRate}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   // Filter button & chips UI
   const FilterButton = () => (
     <button className="filter-button" onClick={() => setShowFilterModal(true)} aria-label="Open Filter Modal">
@@ -722,7 +1003,7 @@ const Dashboard = () => {
           <div className="panel-header">
             <h3>Deployment Frequency</h3>
             <div className="panel-actions">
-              <button className="panel-action-btn" aria-label="More options">⋮</button>
+              <button className="panel-action-btn" onClick={() => setShowDeploymentsDetail(true)} aria-label="View detailed analysis">⋮</button>
             </div>
           </div>
           <div className={`chart-container ${loading ? 'loading' : ''}`}>
@@ -733,7 +1014,7 @@ const Dashboard = () => {
           <div className="panel-header">
             <h3>Lead Time for Changes</h3>
             <div className="panel-actions">
-              <button className="panel-action-btn" aria-label="More options">⋮</button>
+              <button className="panel-action-btn" onClick={() => setShowLeadTimeDetail(true)} aria-label="View detailed analysis">⋮</button>
             </div>
           </div>
           <div className={`chart-container ${loading ? 'loading' : ''}`}>
@@ -744,7 +1025,7 @@ const Dashboard = () => {
           <div className="panel-header">
             <h3>Change Failure Rate</h3>
             <div className="panel-actions">
-              <button className="panel-action-btn" aria-label="More options">⋮</button>
+              <button className="panel-action-btn" onClick={() => setShowFailureRateDetail(true)} aria-label="View detailed analysis">⋮</button>
             </div>
           </div>
           <div className={`chart-container ${loading ? 'loading' : ''}`}>
@@ -755,7 +1036,7 @@ const Dashboard = () => {
           <div className="panel-header">
             <h3>Mean Time to Recovery</h3>
             <div className="panel-actions">
-              <button className="panel-action-btn" aria-label="More options">⋮</button>
+              <button className="panel-action-btn" onClick={() => setShowMTTRDetail(true)} aria-label="View detailed analysis">⋮</button>
             </div>
           </div>
           <div className={`chart-container ${loading ? 'loading' : ''}`}>
@@ -766,6 +1047,10 @@ const Dashboard = () => {
 
       {/* Filter modal */}
       {showFilterModal && <FilterModal />}
+      {showDeploymentsDetail && <DeploymentsDetailModal />}
+      {showLeadTimeDetail && <LeadTimeDetailModal />}
+      {showMTTRDetail && <MTTRDetailModal />}
+      {showFailureRateDetail && <FailureRateDetailModal />}
     </div>
   );
 };
