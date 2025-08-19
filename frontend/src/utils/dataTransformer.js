@@ -1,5 +1,14 @@
 // Transform backend data to chart-compatible format
 export const transformMetricsData = (apiData) => {
+  if (!apiData) {
+    return {
+      deploymentData: [],
+      leadTimeData: [],
+      mttrData: [],
+      cfrData: []
+    };
+  }
+  
   const { deploymentFrequency, leadTime, mttr, cfr } = apiData;
   
   // Transform deployment frequency data

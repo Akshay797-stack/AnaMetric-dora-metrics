@@ -7,9 +7,10 @@ const formatDateTimeForAPI = (dateTimeString) => {
 };
 
 // Helper function to handle API errors
-const handleApiError = (response) => {
+const handleApiError = async (response) => {
   if (!response.ok) {
-    throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    const errorText = await response.text().catch(() => 'Unknown error');
+    throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
   }
   return response.json();
 };
@@ -94,6 +95,30 @@ export const apiService = {
       console.error('Error fetching all metrics:', error);
       throw error;
     }
+  },
+
+  // Get AI insights
+  async getAIInsights(startTime, endTime) {
+    const formattedStart = formatDateTimeForAPI(startTime);
+    const formattedEnd = formatDateTimeForAPI(endTime);
+    
+    const response = await fetch(
+      `${API_BASE_URL}/ai-insights?start_time=${encodeURIComponent(formattedStart)}&end_time=${encodeURIComponent(formattedEnd)}`
+    );
+    
+    return handleApiError(response);
+  },
+
+  // Get forecast for a specific metric
+  async getForecast(metric, startTime, endTime, days = 30) {
+    const formattedStart = formatDateTimeForAPI(startTime);
+    const formattedEnd = formatDateTimeForAPI(endTime);
+    
+    const response = await fetch(
+      `${API_BASE_URL}/forecast?metric=${metric}&start_time=${encodeURIComponent(formattedStart)}&end_time=${encodeURIComponent(formattedEnd)}&days=${days}`
+    );
+    
+    return handleApiError(response);
   }
 };
 

@@ -66,9 +66,45 @@ body.dark {
   --grafana-accent-purple: #a259ff;
   --grafana-accent-cyan: #00bcd4;
 
-  --grafana-shadow-light: 0 1px 3px rgba(0, 0, 0, 0.25);
-  --grafana-shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.32);
-  --grafana-shadow-heavy: 0 8px 16px rgba(0, 0, 0, 0.45);
+  /* Modern Apple-like subtle shadows for dark theme */
+  --grafana-shadow-light: 0 1.5px 4px rgba(0, 0, 0, 0.18);
+  --grafana-shadow-medium: 0 6px 16px rgba(0, 0, 0, 0.22);
+  --grafana-shadow-heavy: 0 12px 32px rgba(0, 0, 0, 0.28);
+
+  --color-bg-card: var(--grafana-bg-card);
+  --color-text: var(--grafana-text-primary);
+  --color-primary: var(--grafana-accent-blue);
+
+  --font-family: "Inter", sans-serif;
+}
+
+/* Blue Theme - Apple/Grafana inspired */
+body.blue {
+  --grafana-bg-primary: #eaf3fb;
+  --grafana-bg-secondary: #d0e6fa;
+  --grafana-bg-tertiary: #b3d8f7;
+  --grafana-bg-hover: #c2e0fa;
+  --grafana-bg-card: #d0e6fa;
+  --grafana-bg-panel: #b3d8f7;
+
+  --grafana-border-primary: #7ab8f5;
+  --grafana-border-secondary: #b3d8f7;
+
+  --grafana-text-primary: #1a3557;
+  --grafana-text-secondary: #3a6ea5;
+  --grafana-text-muted: #7ab8f5;
+
+  --grafana-accent-blue: #1976d2;
+  --grafana-accent-green: #43a047;
+  --grafana-accent-orange: #ffa726;
+  --grafana-accent-red: #e53935;
+  --grafana-accent-purple: #5e35b1;
+  --grafana-accent-cyan: #00bcd4;
+
+  /* Modern Apple-like subtle shadows for blue theme */
+  --grafana-shadow-light: 0 1.5px 4px rgba(25, 118, 210, 0.1);
+  --grafana-shadow-medium: 0 6px 16px rgba(25, 118, 210, 0.14);
+  --grafana-shadow-heavy: 0 12px 32px rgba(25, 118, 210, 0.18);
 
   --color-bg-card: var(--grafana-bg-card);
   --color-text: var(--grafana-text-primary);

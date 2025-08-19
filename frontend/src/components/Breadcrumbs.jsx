@@ -57,7 +57,7 @@ const Breadcrumbs = () => {
   };
 
   return (
-    <nav className="grafana-breadcrumbs" aria-label="breadcrumb navigation">
+    <nav className="luxury-breadcrumbs" aria-label="breadcrumb navigation">
       <div className="breadcrumb-container">
         <Link to="/" className="breadcrumb-item">
           <span className="breadcrumb-icon">

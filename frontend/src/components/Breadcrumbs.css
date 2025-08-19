@@ -1,209 +1,90 @@
-@import url('../styles/variables.css');
-
-/* Grafana-like Breadcrumbs Styles - Enhanced to match Dashboard.css theme */
-.grafana-breadcrumbs {
-  background: var(--grafana-bg-secondary);
-  border-bottom: 1.5px solid var(--grafana-border-primary);
-  padding: 0.75rem 2rem;
+/* Luxury Breadcrumbs Styles */
+.luxury-breadcrumbs {
   position: sticky;
-  top: 60px;
-  z-index: 150;
-  backdrop-filter: blur(10px);
-  box-shadow: var(--grafana-shadow-light);
-  animation: grafanaFadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes grafanaFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  top: var(--header-height);
+  z-index: var(--z-sticky);
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  margin-bottom: 30px;
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
 }
 
 .breadcrumb-container {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  max-width: 1400px;
+  gap: var(--space-2);
+  max-width: var(--container-max-width);
   margin: 0 auto;
-  font-size: 0.9rem;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  color: var(--grafana-text-secondary);
-  user-select: none;
+  padding: var(--space-2) var(--space-6);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
 }
 
 .breadcrumb-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  color: var(--grafana-text-secondary);
+  gap: var(--space-2);
+  color: var(--text-secondary);
   text-decoration: none;
-  padding: 0.5rem 0.9rem;
-  border-radius: 8px;
-  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-  font-weight: 500;
-  position: relative;
-  cursor: pointer;
-  background: var(--grafana-bg-tertiary);
-  border: 1.5px solid transparent;
-  box-shadow: var(--grafana-shadow-light);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+  border: 1px solid transparent;
 }
 
-.breadcrumb-item:hover,
-.breadcrumb-item:focus-visible {
-  color: var(--grafana-text-primary);
-  background: var(--grafana-bg-hover);
-  border-color: var(--grafana-border-secondary);
-  box-shadow: var(--grafana-shadow-medium);
-  transform: translateY(-2px);
-  outline: none;
+.breadcrumb-item:hover {
+  color: var(--text-primary);
+  background: var(--surface-hover);
+  border-color: var(--border);
 }
 
 .breadcrumb-item.current {
-  color: var(--grafana-text-primary);
-  background: var(--grafana-bg-hover);
-  border: 1.5px solid var(--grafana-border-secondary);
-  font-weight: 600;
-  box-shadow: var(--grafana-shadow-light);
-  cursor: default;
-  transform: none;
+  color: var(--accent);
+  background: var(--surface-hover);
+  border-color: var(--border);
+  pointer-events: none;
 }
 
 .breadcrumb-icon {
-  font-size: 1rem;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--grafana-bg-tertiary);
-  border-radius: 6px;
-  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-  color: var(--grafana-text-secondary);
-  box-shadow: var(--grafana-shadow-light);
-  user-select: none;
-}
-
-.breadcrumb-item:hover .breadcrumb-icon,
-.breadcrumb-item:focus-visible .breadcrumb-icon {
-  background: var(--grafana-bg-hover);
-  color: var(--grafana-text-primary);
-  transform: scale(1.1);
-  box-shadow: var(--grafana-shadow-medium);
-}
-
-.breadcrumb-item.current .breadcrumb-icon {
-  background: var(--grafana-bg-hover);
-  color: var(--grafana-text-primary);
-  box-shadow: var(--grafana-shadow-light);
-  transform: none;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
 }
 
 .breadcrumb-text {
-  font-size: 0.9rem;
-  font-weight: inherit;
-  user-select: text;
-  color: inherit;
   white-space: nowrap;
 }
 
 .breadcrumb-segment {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .separator {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  color: var(--grafana-text-muted);
-  margin: 0 0.3rem;
-  user-select: none;
+  color: var(--text-tertiary);
 }
 
 .separator svg {
-  width: 14px;
-  height: 14px;
-  color: var(--grafana-text-muted);
+  width: 16px;
+  height: 16px;
 }
 
-/* Current breadcrumb arrow indicator */
-.breadcrumb-item.current::after {
-  content: '';
-  position: absolute;
-  bottom: -0.8rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-bottom: 5px solid var(--grafana-border-secondary);
-}
-
-/* Responsive Design */
+/* Responsive */
 @media (max-width: 768px) {
-  .grafana-breadcrumbs {
-    padding: 0.5rem 1rem;
-  }
-
   .breadcrumb-container {
-    gap: 0.3rem;
-    font-size: 0.85rem;
+    padding: var(--space-2) var(--space-4);
   }
-
-  .breadcrumb-item {
-    padding: 0.4rem 0.6rem;
-    border-radius: 6px;
-  }
-
   .breadcrumb-text {
     display: none;
   }
-
-  .breadcrumb-icon {
-    width: 1.7rem;
-    height: 1.7rem;
-    font-size: 1.15rem;
-  }
-
-  .separator {
-    margin: 0 0.15rem;
-  }
-
-  .separator svg {
-    width: 12px;
-    height: 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .grafana-breadcrumbs {
-    padding: 0.35rem 0.75rem;
-  }
-
-  .breadcrumb-item {
-    padding: 0.3rem 0.45rem;
-    border-radius: 5px;
-  }
-
-  .breadcrumb-icon {
-    width: 1.3rem;
-    height: 1.3rem;
-    font-size: 1rem;
-  }
-}
-
-/* Accessibility and interaction focus */
-.breadcrumb-item:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px var(--grafana-border-secondary);
-}
-
-.breadcrumb-item:focus-visible {
-  outline: 2.5px solid var(--grafana-border-secondary);
-  outline-offset: 3px;
-  box-shadow: none;
 }
