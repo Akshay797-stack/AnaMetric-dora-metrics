@@ -1,72 +1,191 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./Footer.css";
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
+
+  const footerSections = [
+    {
+      title: "Product",
+      links: [
+        { label: "Dashboard", path: "/dashboard" },
+        { label: "DORA Metrics", path: "/dashboard" },
+        { label: "AIOps Intelligence", path: "/dashboard" },
+        { label: "FinOps Integration", path: "/dashboard" },
+        { label: "API Documentation", path: "/about" }
+      ]
+    },
+    {
+      title: "Company",
+      links: [
+        { label: "About Us", path: "/about" },
+        { label: "Careers", path: "/about" },
+        { label: "Press Kit", path: "/about" },
+        { label: "Contact", path: "/contact" },
+        { label: "Blog", path: "/about" }
+      ]
+    },
+    {
+      title: "Resources",
+      links: [
+        { label: "Help Center", path: "/about" },
+        { label: "Community", path: "/about" },
+        { label: "Tutorials", path: "/about" },
+        { label: "Webinars", path: "/about" },
+        { label: "Case Studies", path: "/about" }
+      ]
+    },
+    {
+      title: "Legal",
+      links: [
+        { label: "Privacy Policy", path: "/about" },
+        { label: "Terms of Service", path: "/about" },
+        { label: "Cookie Policy", path: "/about" },
+        { label: "GDPR", path: "/about" },
+        { label: "Security", path: "/about" }
+      ]
+    }
+  ];
+
+  const socialLinks = [
+    {
+      name: "Twitter",
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/>
+            </svg>
+      ),
+      url: "https://twitter.com"
+    },
+    {
+      name: "LinkedIn",
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+          <rect x="2" y="9" width="4" height="12"/>
+          <circle cx="4" cy="4" r="2"/>
+            </svg>
+      ),
+      url: "https://linkedin.com"
+    },
+    {
+      name: "GitHub",
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-1.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+            </svg>
+      ),
+      url: "https://github.com"
+    },
+    {
+      name: "YouTube",
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-1.94C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 1.94A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-1.94 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/>
+          <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/>
+            </svg>
+      ),
+      url: "https://youtube.com"
+    }
+  ];
+
   return (
-    <footer className="grafana-footer">
-      <div className="footer-info">
-        <div className="social-icons">
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-            </svg>
-          </a>
-          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-            </svg>
-          </a>
-          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-            </svg>
-          </a>
-          <a href="https://discord.com" target="_blank" rel="noopener noreferrer">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.019 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1568 2.4189Z"/>
-            </svg>
-          </a>
-          <a href="mailto:contact@anametrix.com">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-              <polyline points="22,6 12,13 2,6"/>
-            </svg>
-          </a>
-        </div>
-        <div className="footer-links">
-          <a href="https://anametrix.com" target="_blank" rel="noopener noreferrer">anametrix.com</a>
-          <a href="tel:+1234567890">+1 (234) 567-890</a>
-        </div>
-        <p className="copyright">&copy; 2025 AnaMetrix Pro. All rights reserved.</p>
+    <footer className="luxury-footer">
+      <div className="footer-background">
+        <div className="footer-pattern"></div>
       </div>
-      <div className="footer-grid">
-        <div className="footer-column">
-          <h3>Product</h3>
-          <a href="/">Home</a>
-          <a href="/dashboard">Dashboard</a>
-          <a href="/about">About</a>
-          <a href="/contact">Contact</a>
+      
+      <div className="container">
+        {/* Main Footer Content */}
+        <div className="footer-main">
+          {/* Brand Section */}
+          <div className="footer-brand">
+            <div className="brand-logo">
+              <div className="logo-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 3v18h18"/>
+                  <path d="M18 17V9"/>
+                  <path d="M13 17V5"/>
+                  <path d="M8 17v-3"/>
+            </svg>
+              </div>
+              <span className="logo-text">AnaMetrix</span>
+            </div>
+            <p className="brand-description">
+              The unified platform that transforms DevOps metrics into business intelligence, 
+              combining DORA engineering metrics, AIOps predictive intelligence, and FinOps cost optimization.
+            </p>
+            <div className="social-links">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.name}
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-link"
+                  aria-label={`Follow us on ${social.name}`}
+                >
+                  {social.icon}
+                </a>
+              ))}
+            </div>
         </div>
-        <div className="footer-column">
-          <h3>Features</h3>
-          <a href="/dashboard">DORA Metrics</a>
-          <a href="/dashboard">Real-time Analytics</a>
-          <a href="/dashboard">Custom Dashboards</a>
-          <a href="/dashboard">Performance Insights</a>
+
+          {/* Footer Links */}
+        <div className="footer-links">
+            {footerSections.map((section) => (
+              <div key={section.title} className="footer-section">
+                <h3 className="section-title">{section.title}</h3>
+                <ul className="section-links">
+                  {section.links.map((link) => (
+                    <li key={link.label}>
+                      <Link to={link.path} className="footer-link">
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="footer-column">
-          <h3>Resources</h3>
-          <a href="/docs">Documentation</a>
-          <a href="/api">API Reference</a>
-          <a href="/tutorials">Tutorials</a>
-          <a href="/blog">Blog</a>
+
+        {/* Newsletter Section
+        <div className="footer-newsletter">
+          <div className="newsletter-content">
+            <h3 className="newsletter-title">Stay Updated</h3>
+            <p className="newsletter-description">
+              Get the latest insights on DevOps, AIOps, and FinOps delivered to your inbox.
+            </p>
+            <form className="newsletter-form">
+              <div className="form-group">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="newsletter-input"
+                  required
+                />
+                <button type="submit" className="btn btn-primary">
+                  Subscribe
+                </button>
         </div>
-        <div className="footer-column">
-          <h3>Support</h3>
-          <a href="/help">Help Center</a>
-          <a href="/contact">Contact Support</a>
-          <a href="/feedback">Feedback</a>
-          <a href="/status">System Status</a>
+            </form>
+      </div>
+        </div> */}
+
+        {/* Footer Bottom */}
+        <div className="footer-bottom">
+          <div className="footer-bottom-content">
+            <p className="copyright">
+              © {currentYear} AnaMetrix. All rights reserved.
+            </p>
+            <div className="footer-bottom-links">
+              <Link to="/about" className="footer-bottom-link">Privacy</Link>
+              <Link to="/about" className="footer-bottom-link">Terms</Link>
+              <Link to="/about" className="footer-bottom-link">Cookies</Link>
+        </div>
+        </div>
         </div>
       </div>
     </footer>

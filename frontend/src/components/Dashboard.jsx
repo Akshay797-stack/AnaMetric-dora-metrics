@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 import { Bar, Line, Doughnut } from "react-chartjs-2";
 import {
@@ -17,6 +18,7 @@ import {
 import "chartjs-adapter-date-fns";
 import apiService from "../services/api";
 import { transformMetricsData, calculateAggregatedMetrics, mergeMetricsData } from "../utils/dataTransformer";
+
 
 ChartJS.register(
   CategoryScale,
@@ -309,7 +311,7 @@ const getEnhancedChartOptions = (type) => {
       }
     };
     // Remove scales for doughnut chart
-    baseOptions.scales = {};
+    delete baseOptions.scales;
   } else if (type === 'deployments') {
     // Deployments chart: Y-axis shows count, X-axis shows dates
     baseOptions.scales.y = {
@@ -339,8 +341,6 @@ const getEnhancedChartOptions = (type) => {
         font: { size: 12, family: 'Inter', weight: '600' }
       }
     };
-    // Ensure Y-axis starts from 0 for count data
-    baseOptions.scales.y.beginAtZero = true;
   } else if (type === 'leadTime') {
     // Lead Time chart: Y-axis shows days, X-axis shows dates
     baseOptions.scales.y = {
@@ -400,7 +400,7 @@ const getEnhancedChartOptions = (type) => {
 
 // ---- UI Components ----
 const MetricCard = ({ title, value, unit, change, changeType, icon }) => (
-  <div className="metric-card grafana-panel">
+  <div className="metric-card card">
     <div className="metric-header">
       <div className="metric-icon">{icon}</div>
       <div className="metric-info">
@@ -433,6 +433,7 @@ const FilterChip = ({ label, onRemove }) => (
 
 // ---- Main Dashboard ----
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [startDate, setStartDate] = useState(getDefaultDateRange().start);
   const [endDate, setEndDate] = useState(getDefaultDateRange().end);
   const [showFilterModal, setShowFilterModal] = useState(false);
@@ -483,9 +484,12 @@ const Dashboard = () => {
     return metricsData?.merged || [];
   }, [metricsData]);
 
+  // Handle empty data gracefully
+  const hasData = currentData && currentData.length > 0;
+
   // Generate chart data for each metric
   const getChartData = (type) => {
-    if (!currentData.length) {
+    if (!hasData) {
       // Return empty chart data when no data is available
       return {
         labels: [],
@@ -899,7 +903,7 @@ const Dashboard = () => {
   // Show loading state
   if (loading) {
     return (
-      <div className="grafana-dashboard">
+      <div className="luxury-dashboard">
         <div className="loading-container">
           <div className="loading-spinner"></div>
           <p>Loading metrics data...</p>
@@ -911,7 +915,7 @@ const Dashboard = () => {
   // Show error state
   if (error) {
     return (
-      <div className="grafana-dashboard">
+      <div className="luxury-dashboard">
         <div className="error-container">
           <h2>Error Loading Data</h2>
           <p>{error}</p>
@@ -921,20 +925,31 @@ const Dashboard = () => {
     );
   }
 
+  
   return (
-    <div className="grafana-dashboard">
+    <div className="luxury-dashboard">
       {/* Header */}
       <div className="dashboard-header">
         <div className="header-left">
           <h1 className="dashboard-title">DORA Metrics Dashboard</h1>
-          <div className="dashboard-subtitle grafana-text-muted">
+          <div className="dashboard-subtitle">
             Last updated: {new Date().toLocaleTimeString()}
           </div>
         </div>
         <div className="header-controls">
-          <FilterButton />
-        </div>
-      </div>
+          <button 
+            className="ai-insights-btn"
+            onClick={() => navigate('/ai-insights')}
+            aria-label="View AI Insights"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+            AI Insights
+          </button>
+    <FilterButton />
+  </div>
+</div>
 
       {/* Filter chips */}
       {(startDate && endDate) && (
@@ -999,7 +1014,7 @@ const Dashboard = () => {
 
       {/* Charts */}
       <div className="charts-grid">
-        <div className="chart-panel grafana-panel">
+        <div className="chart-panel card">
           <div className="panel-header">
             <h3>Deployment Frequency</h3>
             <div className="panel-actions">
@@ -1010,7 +1025,7 @@ const Dashboard = () => {
             <Bar data={getChartData("deployments")} options={getEnhancedChartOptions("deployments")} />
           </div>
         </div>
-        <div className="chart-panel grafana-panel">
+        <div className="chart-panel card">
           <div className="panel-header">
             <h3>Lead Time for Changes</h3>
             <div className="panel-actions">
@@ -1021,7 +1036,7 @@ const Dashboard = () => {
             <Line data={getChartData("leadTime")} options={getEnhancedChartOptions("leadTime")} />
           </div>
         </div>
-        <div className="chart-panel grafana-panel">
+        <div className="chart-panel card">
           <div className="panel-header">
             <h3>Change Failure Rate</h3>
             <div className="panel-actions">
@@ -1032,7 +1047,7 @@ const Dashboard = () => {
             <Doughnut data={getChartData("failureRate")} options={getEnhancedChartOptions("failureRate")} />
           </div>
         </div>
-        <div className="chart-panel grafana-panel">
+        <div className="chart-panel card">
           <div className="panel-header">
             <h3>Mean Time to Recovery</h3>
             <div className="panel-actions">
