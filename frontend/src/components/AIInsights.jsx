@@ -34,8 +34,11 @@ const AIInsights = () => {
   const [aiInsights, setAiInsights] = useState(null);
   const [forecasts, setForecasts] = useState({});
   const [loading, setLoading] = useState(false);
+  const [aiAnalysisLoading, setAiAnalysisLoading] = useState(false);
+  const [forecastLoading, setForecastLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedMetric, setSelectedMetric] = useState("deployment_frequency");
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   // --- Helpers for forecasting and smoothing on the client ---
   const clipToZero = (value) => Math.max(0, Number.isFinite(value) ? value : 0);
@@ -107,7 +110,7 @@ const AIInsights = () => {
     return arr[idx];
   };
 
-  // Set default date range (last 30 days)
+  // Set default date range (last 30 days) but don't auto-fetch
   useEffect(() => {
     const end = new Date();
     const start = new Date();
@@ -121,20 +124,25 @@ const AIInsights = () => {
     if (!startDate || !endDate) return;
 
     setLoading(true);
+    setAiAnalysisLoading(true);
+    setForecastLoading(true);
     setError(null);
+    setHasInitialized(true);
 
     try {
-      // Fetch AI insights
-      const insightsData = await apiService.getAIInsights(startDate, endDate);
+      // Fetch AI insights and forecasts in parallel
+      const [insightsData, ...forecastResults] = await Promise.all([
+        apiService.getAIInsights(startDate, endDate),
+        ...["deployment_frequency", "lead_time", "mttr", "cfr"].map(metric => 
+          apiService.getForecast(metric, startDate, endDate, 30)
+        )
+      ]);
+
       setAiInsights(insightsData);
+      setAiAnalysisLoading(false);
 
-      // Fetch forecasts for all metrics
+      // Process forecast data
       const metrics = ["deployment_frequency", "lead_time", "mttr", "cfr"];
-      const forecastPromises = metrics.map(metric => 
-        apiService.getForecast(metric, startDate, endDate, 30)
-      );
-
-      const forecastResults = await Promise.all(forecastPromises);
       const forecastData = {};
       
       metrics.forEach((metric, index) => {
@@ -142,19 +150,18 @@ const AIInsights = () => {
       });
 
       setForecasts(forecastData);
+      setForecastLoading(false);
     } catch (err) {
       console.error('Error fetching data:', err);
       setError(err.message);
+      setAiAnalysisLoading(false);
+      setForecastLoading(false);
     } finally {
       setLoading(false);
     }
   }, [startDate, endDate]);
 
-  useEffect(() => {
-    if (startDate && endDate) {
-      fetchData();
-    }
-  }, [startDate, endDate, fetchData]);
+  // Remove auto-fetch on date change - only fetch when user clicks button
 
   const getForecastChartData = (metric) => {
     const forecast = forecasts[metric];
@@ -468,16 +475,7 @@ const AIInsights = () => {
     });
   };
 
-  if (loading) {
-    return (
-      <div className="ai-insights-container">
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Loading AI insights and forecasts...</p>
-        </div>
-      </div>
-    );
-  }
+  // Remove the full-page loading state since we now have section-specific loading
 
   if (error) {
     return (
@@ -525,27 +523,64 @@ const AIInsights = () => {
             className="date-input"
           />
         </div>
-        <button onClick={fetchData} className="fetch-button">
-          Update Analysis
+        <button onClick={fetchData} className="fetch-button" disabled={loading}>
+          {loading ? (
+            <>
+              <div className="button-spinner"></div>
+              Updating...
+            </>
+          ) : (
+            'Update Analysis'
+          )}
         </button>
       </div>
 
+      {/* Initial State - Show when filters haven't been applied yet */}
+      {!hasInitialized && (
+        <div className="initial-state">
+          <div className="initial-state-content">
+            <div className="initial-state-icon">📊</div>
+            <h2>Select Filters to Get Started</h2>
+            <p>Choose your date range above and click "Update Analysis" to view AI insights and forecasts for your DORA metrics.</p>
+            <div className="initial-state-features">
+              <div className="feature">
+                <span className="feature-icon">🤖</span>
+                <span>AI-powered analysis of your metrics</span>
+              </div>
+              <div className="feature">
+                <span className="feature-icon">📈</span>
+                <span>Predictive forecasting</span>
+              </div>
+              <div className="feature">
+                <span className="feature-icon">📊</span>
+                <span>Interactive charts and visualizations</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* AI Insights Section */}
-      {aiInsights && (
+      {hasInitialized && (
         <div className="insights-section">
           <h2>AI Analysis</h2>
           <div className="ai-insights-card">
-            {aiInsights.ai_insights && aiInsights.ai_insights.ai_insights ? (
+            {aiAnalysisLoading ? (
+              <div className="section-loading">
+                <div className="loading-spinner"></div>
+                <p>Analyzing your DORA metrics...</p>
+              </div>
+            ) : aiInsights && aiInsights.ai_insights && aiInsights.ai_insights.ai_insights ? (
               <div className="insights-content">
                 <h3>DORA Metrics Analysis</h3>
                 {renderFormattedText(aiInsights.ai_insights.ai_insights)}
               </div>
-            ) : aiInsights.ai_insights && aiInsights.ai_insights.error ? (
+            ) : aiInsights && aiInsights.ai_insights && aiInsights.ai_insights.error ? (
               <div className="insights-error">
                 <h3>AI Analysis Error</h3>
                 <p>{aiInsights.ai_insights.error}</p>
               </div>
-            ) : aiInsights.error ? (
+            ) : aiInsights && aiInsights.error ? (
               <div className="insights-error">
                 <h3>API Error</h3>
                 <p>{aiInsights.error}</p>
@@ -554,7 +589,7 @@ const AIInsights = () => {
               <div className="insights-content">
                 <h3>DORA Metrics Analysis</h3>
                 <div className="insights-text">
-                  <p>AI analysis is being processed...</p>
+                  <p>Select a date range and click "Update Analysis" to get started.</p>
                 </div>
               </div>
             )}
@@ -563,48 +598,61 @@ const AIInsights = () => {
       )}
 
       {/* Forecasting Section */}
-      <div className="forecasting-section">
-        <h2>Forecasting</h2>
-        <div className="metric-selector">
-          <label htmlFor="metricSelect">Select Metric:</label>
-          <select
-            id="metricSelect"
-            value={selectedMetric}
-            onChange={(e) => setSelectedMetric(e.target.value)}
-            className="metric-select"
-          >
-            <option value="deployment_frequency">Deployment Frequency</option>
-            <option value="lead_time">Lead Time</option>
-            <option value="mttr">MTTR</option>
-            <option value="cfr">Change Failure Rate</option>
-          </select>
-        </div>
+      {hasInitialized && (
+        <div className="forecasting-section">
+          <h2>Forecasting</h2>
+          <div className="metric-selector">
+            <label htmlFor="metricSelect">Select Metric:</label>
+            <select
+              id="metricSelect"
+              value={selectedMetric}
+              onChange={(e) => setSelectedMetric(e.target.value)}
+              className="metric-select"
+            >
+              <option value="deployment_frequency">Deployment Frequency</option>
+              <option value="lead_time">Lead Time</option>
+              <option value="mttr">MTTR</option>
+              <option value="cfr">Change Failure Rate</option>
+            </select>
+          </div>
 
-        <div className="forecast-charts">
-          {Object.keys(forecasts).map(metric => {
-            const forecast = forecasts[metric];
-            const hasError = forecast && forecast.error;
-            
-            return (
-              <div key={metric} className={`forecast-chart ${selectedMetric === metric ? 'active' : 'hidden'}`}>
-                <div className="chart-header">
-                  <h3>{getMetricDisplayName(metric)} Forecast</h3>
-                  <span className="unit">({getMetricUnit(metric)})</span>
-                </div>
-                <div className="chart-container">
-                  {hasError ? (
-                    <div className="no-data error">Error: {forecast.error}</div>
-                  ) : getForecastChartData(metric) ? (
-                    <Line data={getForecastChartData(metric)} options={chartOptions} />
-                  ) : (
-                    <div className="no-data">No forecast data available</div>
-                  )}
-                </div>
+          <div className="forecast-charts">
+            {forecastLoading ? (
+              <div className="section-loading">
+                <div className="loading-spinner"></div>
+                <p>Generating forecasts...</p>
               </div>
-            );
-          })}
+            ) : Object.keys(forecasts).length > 0 ? (
+              Object.keys(forecasts).map(metric => {
+                const forecast = forecasts[metric];
+                const hasError = forecast && forecast.error;
+                
+                return (
+                  <div key={metric} className={`forecast-chart ${selectedMetric === metric ? 'active' : 'hidden'}`}>
+                    <div className="chart-header">
+                      <h3>{getMetricDisplayName(metric)} Forecast</h3>
+                      <span className="unit">({getMetricUnit(metric)})</span>
+                    </div>
+                    <div className="chart-container">
+                      {hasError ? (
+                        <div className="no-data error">Error: {forecast.error}</div>
+                      ) : getForecastChartData(metric) ? (
+                        <Line data={getForecastChartData(metric)} options={chartOptions} />
+                      ) : (
+                        <div className="no-data">No forecast data available</div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="section-loading">
+                <p>Select a date range and click "Update Analysis" to generate forecasts.</p>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
